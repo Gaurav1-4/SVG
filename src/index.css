@@ -1,0 +1,227 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-bg: #FAF7F4;
+    --color-surface: #FFFFFF;
+    --color-primary: #D4AF37;
+    --color-accent: #1E3A8A;
+    --color-text: #1C1C1C;
+    --color-muted: #7A7A7A;
+    --color-border: #E8E0D8;
+    --color-whatsapp: #25D366;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-bg text-text font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-medium;
+  }
+}
+
+@layer utilities {
+  .delay-50 { animation-delay: 50ms; }
+  .delay-100 { animation-delay: 100ms; }
+  .delay-150 { animation-delay: 150ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-450 { animation-delay: 450ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-600 { animation-delay: 600ms; }
+}
+
+/* Texture overlay for Hero section */
+.texture-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* Hide scrollbar for category strip */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* --- Upgrades Phase 2 Keyframes --- */
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #f0e8e4 25%, #e8dcd6 50%, #f0e8e4 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 0px rgba(37,211,102,0); }
+  50% { box-shadow: 0 0 8px rgba(37,211,102,0.6); }
+}
+
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 0.5; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+@keyframes letterIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.animate-bounce-hover {
+  animation: bounce 1.5s infinite ease-in-out;
+}
+
+/* Product Card ENTRANCE handling */
+.card-enter {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.card-enter.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Brand Logo Integrations */
+.nav-logo {
+  height: 44px;
+  width: 44px;
+  object-fit: contain;
+  padding: 4px;
+  background-color: #0D1B38;
+  border-radius: 8px;
+  display: block;
+  transition: transform 0.2s ease;
+}
+.brand-logo-link:hover .nav-logo {
+  transform: scale(1.05);
+}
+
+.hero-logo-wrap {
+  margin-bottom: 1.5rem;
+  animation: fadeUp 0.4s ease both;
+  animation-delay: 0s;
+}
+.hero-logo {
+  height: 80px;
+  width: 80px;
+  object-fit: contain;
+  padding: 6px;
+  background-color: #0D1B38;
+  border-radius: 12px;
+  border: 1px solid rgba(194, 149, 108, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+#introOverlay {
+  position: fixed;
+  inset: 0;
+  background: #0D1B38;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: introExit 0.7s ease forwards;
+  animation-delay: 2.4s;
+}
+@keyframes introExit {
+  0%   { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-100%); pointer-events: none; }
+}
+.intro-logo {
+  width: 160px;
+  height: 200px;
+  object-fit: contain;
+  padding: 12px;
+  background-color: #0D1B38;
+  border-radius: 16px;
+  animation: logoReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.3s;
+}
+@keyframes logoReveal {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.intro-line {
+  width: 0;
+  height: 1px;
+  background: #C2956C;
+  margin: 1.2rem auto;
+  animation: lineGrow 0.5s ease forwards;
+  animation-delay: 1s;
+}
+@keyframes lineGrow {
+  to { width: 120px; }
+}
+.intro-tagline {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  opacity: 0;
+  animation: fadeIn 0.4s ease forwards;
+  animation-delay: 1.3s;
+}
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+.login-logo {
+  width: 72px;
+  height: 90px;
+  object-fit: contain;
+  padding: 6px;
+  background-color: #0D1B38;
+  border-radius: 10px;
+  display: block;
+  margin: 0 auto 1.5rem;
+}
+
+.footer-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 1rem;
+}
+.footer-logo {
+  width: 52px;
+  height: 64px;
+  object-fit: contain;
+  padding: 4px;
+  background-color: #0D1B38;
+  border-radius: 8px;
+  border: 1px solid rgba(194, 149, 108, 0.3);
+  flex-shrink: 0;
+}
+.footer-brand-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem;
+  color: #fff;
+  letter-spacing: 0.1em;
+}
+.footer-tagline {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 2px;
+}
