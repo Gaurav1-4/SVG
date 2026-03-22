@@ -8,6 +8,7 @@ import {
   TrendingUp, 
   Eye, 
   ShoppingCart,
+  MessageCircle,
   ChevronRight
 } from 'lucide-react';
 import { getProducts } from '../../services/productService';
