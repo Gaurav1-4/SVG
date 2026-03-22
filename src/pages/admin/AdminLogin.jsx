@@ -35,8 +35,8 @@ const AdminLogin = () => {
         
         <div className="admin-login-logo">
           <img 
-            src="/images/tr-traders-logo.png" 
-            alt="TR TRADERS Admin" 
+            src="/images/svg-logo.png" 
+            alt="SVG Admin" 
             className="login-logo"
           />
         </div>

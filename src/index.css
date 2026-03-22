@@ -6,16 +6,16 @@
 
 @layer base {
   :root {
-    --color-bg: #F5F7FA;
-    --color-surface: #FFFFFF;
-    --color-primary: #1A6B3C;
-    --color-accent: #E8A020;
-    --color-accent-dark: #C47E10;
-    --color-text: #1A1A2E;
-    --color-muted: #6B7280;
-    --color-border: #E2E8F0;
+    --color-bg: #0A0A0A;
+    --color-surface: #141414;
+    --color-primary: #D4AF37;
+    --color-accent: #E8C35A;
+    --color-accent-dark: #A68826;
+    --color-text: #F3F4F6;
+    --color-muted: #9CA3AF;
+    --color-border: #262626;
     --color-wa: #25D366;
-    --color-highlight: #FFF8E7;
+    --color-highlight: #1F1F1F;
     --color-badge: #DC2626;
     --font-display: 'Playfair Display', serif;
     --font-body: 'Inter', sans-serif;
@@ -46,6 +46,11 @@
   .delay-450 { animation-delay: 450ms; }
   .delay-500 { animation-delay: 500ms; }
   .delay-600 { animation-delay: 600ms; }
+  
+  /* Dark Mode Overrides for Hardcoded Tailwind Colors */
+  .bg-white { background-color: var(--color-surface) !important; }
+  .bg-gray-50 { background-color: var(--color-bg) !important; }
+  .text-black { color: var(--color-primary) !important; }
 }
 
 /* Texture overlay for Hero section */

@@ -27,18 +27,18 @@ const About = () => {
         {/* Content */}
         <div className="prose prose-lg prose-gray mx-auto text-text space-y-6">
           <p className="leading-relaxed">
-            Welcome to <strong className="font-serif font-medium text-black">TR TRADERS</strong>, your premier destination for exquisite ladies' ethnic wear. Founded with a passion for preserving traditional craftsmanship while embracing modern elegance, we have grown from a modest wholesale supplier to a trusted name across the city.
+            Welcome to <strong className="font-serif font-medium text-primary">Shri Vrindavan Garments (SVG)</strong>, your premier destination for exquisite ladies' ethnic wear. Founded with a passion for preserving traditional craftsmanship while embracing modern elegance, we have grown from a modest wholesale supplier to a trusted name across the city.
           </p>
           <p className="leading-relaxed">
             Our journey began over two decades ago in the bustling wholesale fabric markets. Through an unwavering commitment to quality and an innate understanding of fabrics like Banarasi silk, pure cotton, chiffon, and velvet, we earned the loyalty of countless boutiques and retailers. Today, we bring that same wholesale excellence directly to your wardrobe.
           </p>
           
-          <h2 className="text-2xl font-serif font-medium text-black mt-12 mb-4">Our Craftsmanship</h2>
+          <h2 className="text-2xl font-serif font-medium text-primary mt-12 mb-4">Our Craftsmanship</h2>
           <p className="leading-relaxed">
-            Every piece curated at TR Traders tells a story. We work intimately with artisans who have mastered the art of Zardozi, threadwork, and block printing over generations. Whether you are looking for an intricately woven bridal ensemble, a breezy cotton suit for daily wear, or a sophisticated velvet kurta for the winter festivities, our collection ensures you stand out with grace.
+            Every piece curated at SVG tells a story. We work intimately with artisans who have mastered the art of Zardozi, threadwork, and block printing over generations. Whether you are looking for an intricately woven bridal ensemble, a breezy cotton suit for daily wear, or a sophisticated velvet kurta for the winter festivities, our collection ensures you stand out with grace.
           </p>
 
-          <h2 className="text-2xl font-serif font-medium text-black mt-12 mb-4">The Promise of Elegance</h2>
+          <h2 className="text-2xl font-serif font-medium text-primary mt-12 mb-4">The Promise of Elegance</h2>
           <p className="leading-relaxed">
             We believe that every woman deserves to feel luxurious without compromise. That's why we maintain a zero-compromise policy on fabric purity and stitching standards. Our latest transition into the online catalog space is designed to give you a seamless viewing experience of our newest arrivals. 
           </p>

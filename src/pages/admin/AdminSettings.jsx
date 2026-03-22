@@ -6,7 +6,7 @@ const AdminSettings = () => {
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useState({
-    storeName: 'TR Traders',
+    storeName: 'Shri Vrindavan Garments',
     whatsappNumber: '919876543210',
     email: 'contact@trtraders.com',
     address: '123 Heritage Lane, Chandni Chowk, Delhi 110006',
