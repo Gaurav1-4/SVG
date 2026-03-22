@@ -93,8 +93,8 @@ const ProductDetail = () => {
   const saved = isInWishlist(product.id);
   
   // Generate WhatsApp Message
-  const waMessage = `Hi! I'm interested in the ${product.name} ${selectedColor ? `in ${selectedColor}` : ''} ${selectedSize ? `(Size: ${selectedSize})` : ''}. Can you please share availability and pricing?`;
-  const waUrl = `https://wa.me/919999999999?text=${encodeURIComponent(waMessage)}`;
+  const waMessage = `Hi! I'm interested in the ${product.name} (Code: ${product.id}).\nCan you share more details?`;
+  const waUrl = `https://wa.me/919208275274?text=${encodeURIComponent(waMessage)}`;
 
   return (
     <div className="min-h-screen bg-bg pt-28 pb-24">

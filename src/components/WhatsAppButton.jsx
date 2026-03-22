@@ -6,7 +6,7 @@ const WhatsAppButton = ({
   customMessage = '',
   className = ''
 }) => {
-  const [phoneNumber, setPhoneNumber] = useState('919876543210');
+  const [phoneNumber, setPhoneNumber] = useState('919208275274');
 
   useEffect(() => {
     const loadSettings = () => {

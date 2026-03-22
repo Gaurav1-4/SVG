@@ -78,7 +78,7 @@ const Home = () => {
               The Collection
             </button>
             <a 
-              href="https://wa.me/919999999999?text=Hi!%20I%20would%20like%20to%20know%20more%20about%20your%20new%20collection."
+              href="https://wa.me/919208275274?text=Hi!%20I%20would%20like%20to%20know%20more%20about%20your%20new%20collection."
               target="_blank"
               rel="noopener noreferrer"
               className="bg-transparent text-text border-b border-text/20 pb-1 hover:border-primary transition-all duration-300 uppercase tracking-[0.2em] text-[11px] font-bold mt-2 sm:mt-0 sm:self-center"

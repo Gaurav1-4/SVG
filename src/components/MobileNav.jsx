@@ -44,7 +44,7 @@ const MobileNav = () => {
               key={item.name}
               onClick={() => {
                 if (item.action === 'whatsapp') {
-                  window.open("https://wa.me/919999999999?text=Hi!%20I'm%20exploring%20your%20collection.", "_blank");
+                  window.open("https://wa.me/919208275274?text=Hi!%20I'm%20exploring%20your%20collection.", "_blank");
                 } else if (item.action === 'wishlist') {
                   // Dispatch custom event to open wishlist modal
                   window.dispatchEvent(new Event('openWishlist'));

@@ -6,8 +6,8 @@ import { BrandLogo } from './BrandLogo';
 const Footer = () => {
   const [settings, setSettings] = useState({
     storeName: 'TR TRADERS',
-    whatsappNumber: '919999999999',
-    address: 'Navi Mumbai, Maharashtra\nVisit our store for exclusives.'
+    whatsappNumber: '919208275274',
+    address: 'Shori Cloth Market\nRohtak, Haryana (124001)'
   });
 
   useEffect(() => {
