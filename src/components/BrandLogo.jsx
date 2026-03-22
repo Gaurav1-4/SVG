@@ -2,7 +2,7 @@ export const BrandLogo = ({ className = "", dark = false }) => {
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       <img 
-        src="/tr-logo.png" 
+        src="/images/tr-traders-logo.png" 
         alt="TR Traders Logo" 
         className="h-10 w-auto object-contain shrink-0 p-1 bg-[#0D1B38] rounded-md"
       />
