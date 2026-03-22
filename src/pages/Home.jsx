@@ -33,13 +33,21 @@ const Home = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-bg">
-      {/* 1. Asymmetrical Editorial Hero Section */}
-      <section className="relative min-h-screen w-full flex flex-col md:flex-row overflow-hidden bg-bg">
-        {/* Left Side: Typography & CTA */}
-        <div className="w-full md:w-5/12 lg:w-1/2 flex flex-col justify-center px-6 md:px-12 lg:px-20 pt-32 pb-16 z-20 bg-bg">
+      {/* 1. Typography-Focused Minimalist Hero Section */}
+      <section className="relative min-h-screen w-full flex overflow-hidden bg-bg">
+        {/* Center: Typography & CTA */}
+        <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center text-center px-6 md:px-12 lg:px-20 pt-32 pb-16 z-20 bg-bg">
+          
+          <div className="mb-10 hero-logo-wrap text-center">
+            <img 
+              src="/images/tr-traders-logo.png" 
+              alt="TR TRADERS Logo" 
+              className="h-14 md:h-16 object-contain mx-auto"
+            />
+          </div>
           
           <p 
-            className="text-primary tracking-[0.4em] font-sans font-semibold text-[10px] md:text-xs uppercase opacity-0 animate-fade-up mb-6 border-l-2 border-primary pl-4"
+            className="text-primary tracking-[0.4em] font-sans font-semibold text-[10px] md:text-xs uppercase opacity-0 animate-fade-up mb-6 border-b-2 border-primary pb-2"
             style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}
           >
             The Festive Edit 2025
@@ -53,14 +61,14 @@ const Home = () => {
           </h1>
 
           <p 
-            className="text-muted font-sans text-sm md:text-base max-w-sm opacity-0 animate-fade-up font-light tracking-wide mt-8 leading-relaxed"
+            className="text-muted font-sans text-sm md:text-base max-w-lg mx-auto opacity-0 animate-fade-up font-light tracking-wide mt-8 leading-relaxed"
             style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}
           >
             Discover our curated collection of hand-embroidered silks, pure cottons, and breathtaking designer organza suites tailored for the modern traditionalist.
           </p>
 
           <div 
-            className="flex flex-col sm:flex-row items-start gap-5 pt-12 opacity-0 animate-fade-up"
+            className="flex flex-col sm:flex-row items-center gap-5 pt-12 opacity-0 animate-fade-up"
             style={{ animationDelay: '0.8s', animationFillMode: 'forwards' }}
           >
             <button 
@@ -73,23 +81,11 @@ const Home = () => {
               href="https://wa.me/919208275274?text=Hi!%20I%20would%20like%20to%20know%20more%20about%20your%20new%20collection."
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-transparent text-text border-b border-text/20 pb-1 hover:border-primary transition-all duration-300 uppercase tracking-[0.2em] text-[11px] font-bold mt-2 sm:mt-0 sm:self-center"
+              className="bg-transparent text-text border-b border-text/20 pb-1 hover:border-primary transition-all duration-300 uppercase tracking-[0.2em] text-[11px] font-bold mt-2 sm:mt-0"
             >
               Enquire Stylist
             </a>
           </div>
-        </div>
-
-        {/* Right Side: Editorial Image Container */}
-        <div className="w-full md:w-7/12 lg:w-1/2 h-[60vh] md:h-screen relative overflow-hidden group">
-          <div className="absolute inset-0 bg-text/10 z-10 transition-opacity duration-700 group-hover:bg-transparent"></div>
-          <img 
-            src="/images/suit-blue.jpg" 
-            alt="Beautiful Ethnic Suit"
-            className="w-full h-full object-cover object-center scale-100 transition-transform duration-[1.5s] ease-out group-hover:scale-105"
-          />
-          {/* Subtle artistic framing */}
-          <div className="absolute inset-6 border border-white/20 z-20 pointer-events-none hidden md:block"></div>
         </div>
       </section>
 
