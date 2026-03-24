@@ -34,12 +34,13 @@ const Navbar = ({ onOpenWishlist }) => {
     <nav
       className="fixed w-full z-50 transition-all duration-300"
       style={{
-        height: '68px',
+        height: '64px',
         background: scrolled
-          ? 'rgba(12,10,8,0.95)'
-          : 'rgba(12,10,8,0.80)',
+          ? 'rgba(255,255,255,0.98)'
+          : 'rgba(255,255,255,0.95)',
         backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--border)',
+        borderBottom: '1px solid #E8E4DC',
+        boxShadow: scrolled ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
@@ -47,9 +48,14 @@ const Navbar = ({ onOpenWishlist }) => {
 
           {/* Left: Brand */}
           <Link to="/" className="brand-area cursor-none">
-            <div className="nav-mono">
-              <span>SVG</span>
-            </div>
+            <img
+              src="/images/svg-logo.png"
+              alt="Shri Vrindavan Garments"
+              className="nav-logo"
+              loading="eager"
+              draggable="false"
+              onError={(e) => e.currentTarget.style.display = 'none'}
+            />
             <div className="hidden sm:block">
               <div className="brand-name">Shri Vrindavan Garments</div>
               <div className="brand-sub">The Groom's House · Delhi</div>
@@ -150,8 +156,9 @@ const Navbar = ({ onOpenWishlist }) => {
         <div
           className="md:hidden absolute top-full left-0 w-full animate-fade-in"
           style={{
-            background: 'rgba(12,10,8,0.98)',
-            borderBottom: '1px solid var(--border)',
+            background: 'rgba(255,255,255,0.98)',
+            borderBottom: '1px solid #E8E4DC',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
           }}
         >
           <div className="px-6 py-6 space-y-1">
@@ -161,8 +168,8 @@ const Navbar = ({ onOpenWishlist }) => {
                 onClick={() => { navigate(`/catalog?category=${cat}`); setIsOpen(false); }}
                 className="block w-full text-left py-3 border-b cursor-none"
                 style={{
-                  borderColor: 'var(--border)',
-                  color: 'var(--muted)',
+                  borderColor: '#E8E4DC',
+                  color: '#8A8A8A',
                   fontFamily: 'var(--font-body)',
                   fontSize: '11px',
                   letterSpacing: '0.2em',
@@ -179,8 +186,8 @@ const Navbar = ({ onOpenWishlist }) => {
                 onClick={() => setIsOpen(false)}
                 className="block w-full text-left py-3 border-b cursor-none"
                 style={{
-                  borderColor: 'var(--border)',
-                  color: location.pathname === link.path ? 'var(--gold)' : 'var(--cream)',
+                  borderColor: '#E8E4DC',
+                  color: location.pathname === link.path ? '#B8960C' : '#1A1A1A',
                   fontFamily: 'var(--font-body)',
                   fontSize: '11px',
                   letterSpacing: '0.2em',
