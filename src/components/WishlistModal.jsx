@@ -1,13 +1,22 @@
 import { useState, useEffect } from 'react';
 import { X, Heart, Trash2 } from 'lucide-react';
 import { useWishlist } from '../hooks/useWishlist';
+import { useLocation } from 'react-router-dom';
 import ProductCard from './ProductCard';
 import { getProducts } from '../services/productService';
 
 const WishlistModal = ({ isOpen, onClose }) => {
   const { wishlist, toggleWishlist } = useWishlist();
+  const location = useLocation();
   const [savedProducts, setSavedProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // Force close on route change to prevent overflow locking
+  useEffect(() => {
+    if (isOpen) {
+      onClose();
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     if (isOpen) {

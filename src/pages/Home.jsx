@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
-import { getProducts, addProduct, updateProduct, deleteProduct } from '../services/productService';
+import { getProducts } from '../services/productService';
+import { useSettings } from '../hooks/useSettings';
 
 const GROOM_CATS = ['All', 'Sherwani', 'Wedding Suit', 'Nehru Jacket', 'Kurta Pajama', 'Indo-Western', 'Jodhpuri', 'Achkan', 'Bandhgala'];
 
@@ -16,13 +17,6 @@ const HERO_CARDS = [
   { emoji: '🤵', label: 'Wedding Suit', cat: 'Wedding Suit' },
   { emoji: '🎩', label: 'Jodhpuri', cat: 'Jodhpuri' },
 ];
-
-const EMOJI_OPTIONS = ['🥻','✨','🎩','🧥','👘','💎','🏛️','👑','🌿','🤵','🪡','🎋','💍','⚔️','🦚','🌟'];
-
-const EMPTY_FORM = {
-  name: '', category: 'Sherwani', fabric: '', occasions: '', price: '',
-  description: '', sizes: '', colors: '', isNew: false, featured: false, emoji: '🥻',
-};
 
 // ─── Counter hook ─────────────────────────────────────────────────────────────
 function useCounter(target, duration = 1400) {
@@ -43,339 +37,11 @@ function useCounter(target, duration = 1400) {
   return count;
 }
 
-// ─── Embedded Admin Panel ──────────────────────────────────────────────────────
-function EmbeddedAdmin({ products, setProducts }) {
-  const [loggedIn, setLoggedIn] = useState(() => sessionStorage.getItem('svg_admin') === 'true');
-  const [pw, setPw] = useState('');
-  const [pwError, setPwError] = useState('');
-  const [shake, setShake] = useState(false);
-  const [tab, setTab] = useState('list');
-  const [form, setForm] = useState(EMPTY_FORM);
-  const [editId, setEditId] = useState(null);
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (pw === 'svg2025') {
-      sessionStorage.setItem('svg_admin', 'true');
-      setLoggedIn(true);
-    } else {
-      setPwError('Incorrect password. Try again.');
-      setShake(true);
-      setTimeout(() => { setShake(false); setPwError(''); }, 2500);
-    }
-  };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('svg_admin');
-    setLoggedIn(false);
-    setTab('list');
-  };
-
-  const handleFormChange = (key, val) => setForm(f => ({ ...f, [key]: val }));
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const productData = {
-      ...form,
-      price: form.price ? Number(form.price) : 0,
-      sizes: form.sizes.split(',').map(s => s.trim()).filter(Boolean),
-      colors: form.colors.split(',').map(c => c.trim()).filter(Boolean),
-      occasions: form.occasions.split(',').map(o => o.trim()).filter(Boolean),
-      images: ['https://images.unsplash.com/photo-1617137968427-85924c800a22?w=600&q=80'],
-      status: 'active',
-    };
-    if (editId) {
-      const updated = await updateProduct(editId, productData);
-      setProducts(ps => ps.map(p => p.id === editId ? { ...p, ...updated } : p));
-    } else {
-      const added = await addProduct(productData);
-      setProducts(ps => [added, ...ps]);
-    }
-    setForm(EMPTY_FORM);
-    setEditId(null);
-    setTab('list');
-  };
-
-  const startEdit = (product) => {
-    setForm({
-      name: product.name || '',
-      category: product.category || 'Sherwani',
-      fabric: product.fabric || '',
-      occasions: (product.occasions || []).join(', '),
-      price: product.price || '',
-      description: product.description || '',
-      sizes: (product.sizes || []).join(', '),
-      colors: (product.colors || []).join(', '),
-      isNew: product.isNew || false,
-      featured: product.featured || false,
-      emoji: product.emoji || '🥻',
-    });
-    setEditId(product.id);
-    setTab('form');
-  };
-
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this product?')) return;
-    await deleteProduct(id);
-    setProducts(ps => ps.filter(p => p.id !== id));
-  };
-
-  const inputStyle = {
-    width: '100%',
-    background: 'rgba(255,255,255,0.04)',
-    border: '1px solid var(--border)',
-    color: 'var(--cream)',
-    fontFamily: 'var(--font-body)',
-    fontSize: '13px',
-    padding: '10px 14px',
-    outline: 'none',
-    transition: 'border-color 0.2s',
-  };
-  const labelStyle = { display: 'block', fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '6px', fontFamily: 'var(--font-body)' };
-
-  if (!loggedIn) {
-    return (
-      <section className="admin-section py-20 px-4">
-        <div className="text-center mb-12">
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '9px', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '12px' }}>
-            Admin Portal
-          </p>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem, 4vw, 3rem)', color: 'var(--cream)', fontWeight: 300 }}>
-            Manage Your <em style={{ color: 'var(--gold)', fontStyle: 'italic' }}>Collection</em>
-          </h2>
-        </div>
-
-        <div className="admin-login-card">
-          <img src="/images/svg-logo.png" alt="SVG" className="w-16 h-16 object-contain mx-auto mb-4" />
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '9px', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '2rem' }}>
-            Admin Access Required
-          </p>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label style={labelStyle}>Password</label>
-              <input
-                type="password"
-                value={pw}
-                onChange={e => setPw(e.target.value)}
-                placeholder="Enter admin password..."
-                className={`admin-input ${shake ? 'shake' : ''}`}
-                style={{ ...inputStyle, borderColor: pwError ? 'var(--red)' : undefined }}
-                required
-              />
-              {pwError && <p style={{ color: 'var(--red)', fontSize: '11px', marginTop: '6px', fontFamily: 'var(--font-body)' }}>{pwError}</p>}
-            </div>
-            <button type="submit" className="btn-primary w-full mt-4">
-              Enter Panel
-            </button>
-          </form>
-        </div>
-      </section>
-    );
-  }
-
-  return (
-    <section className="admin-section px-4 sm:px-8 py-16">
-      <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-10">
-          <div>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '9px', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '8px' }}>
-              Admin Portal
-            </p>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', color: 'var(--cream)', fontWeight: 300 }}>
-              Welcome, <em style={{ color: 'var(--gold)' }}>Admin</em>
-            </h2>
-          </div>
-          <button onClick={handleLogout} className="btn-outline text-sm">Logout</button>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex gap-2 mb-8">
-          <button
-            className={`admin-tab ${tab === 'list' ? 'active-tab' : ''}`}
-            onClick={() => { setTab('list'); setEditId(null); setForm(EMPTY_FORM); }}
-          >
-            All Products ({products.length})
-          </button>
-          <button
-            className={`admin-tab ${tab === 'form' ? 'active-tab' : ''}`}
-            onClick={() => { setTab('form'); setEditId(null); setForm(EMPTY_FORM); }}
-          >
-            {editId ? 'Edit Product' : '+ Add Product'}
-          </button>
-        </div>
-
-        {/* Product List */}
-        {tab === 'list' && (
-          <div className="space-y-2">
-            {products.length === 0 && (
-              <p style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)', fontSize: '13px', textAlign: 'center', padding: '2rem' }}>
-                No products. Add some above.
-              </p>
-            )}
-            {products.map(p => (
-              <div
-                key={p.id}
-                className="flex items-center justify-between p-4 gap-4"
-                style={{ border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <span className="text-2xl flex-shrink-0">{p.emoji || '🥻'}</span>
-                  <div className="min-w-0">
-                    <p style={{ color: 'var(--cream)', fontFamily: 'var(--font-display)', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {p.name}
-                    </p>
-                    <p style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)', fontSize: '10px', letterSpacing: '0.1em' }}>
-                      {p.category} · {p.fabric} {p.price ? `· ₹${Number(p.price).toLocaleString('en-IN')}` : '· Contact for Price'}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-2 flex-shrink-0">
-                  <button
-                    onClick={() => startEdit(p)}
-                    className="admin-tab"
-                    style={{ padding: '6px 14px', fontSize: '9px' }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(p.id)}
-                    className="admin-tab"
-                    style={{ padding: '6px 14px', fontSize: '9px', borderColor: 'var(--red)', color: 'var(--red)' }}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Add / Edit Form */}
-        {tab === 'form' && (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Emoji picker */}
-            <div>
-              <label style={labelStyle}>Emoji</label>
-              <div className="flex flex-wrap gap-2">
-                {EMOJI_OPTIONS.map(em => (
-                  <button
-                    type="button"
-                    key={em}
-                    onClick={() => handleFormChange('emoji', em)}
-                    style={{
-                      fontSize: '1.5rem',
-                      padding: '6px',
-                      background: form.emoji === em ? 'var(--gold)' : 'rgba(255,255,255,0.04)',
-                      border: `1px solid ${form.emoji === em ? 'var(--gold)' : 'var(--border)'}`,
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                    }}
-                  >
-                    {em}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label style={labelStyle}>Product Name *</label>
-                <input style={inputStyle} className="admin-input" value={form.name} onChange={e => handleFormChange('name', e.target.value)} required placeholder="Royal Banarasi Sherwani" />
-              </div>
-              <div>
-                <label style={labelStyle}>Category *</label>
-                <select
-                  style={{ ...inputStyle, cursor: 'pointer' }}
-                  value={form.category}
-                  onChange={e => handleFormChange('category', e.target.value)}
-                >
-                  {GROOM_CATS.filter(c => c !== 'All').map(c => <option key={c}>{c}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={labelStyle}>Fabric *</label>
-                <input style={inputStyle} className="admin-input" value={form.fabric} onChange={e => handleFormChange('fabric', e.target.value)} required placeholder="Banarasi Silk" />
-              </div>
-              <div>
-                <label style={labelStyle}>Price (₹) — leave blank for contact</label>
-                <input style={inputStyle} type="number" className="admin-input" value={form.price} onChange={e => handleFormChange('price', e.target.value)} placeholder="12999" />
-              </div>
-              <div>
-                <label style={labelStyle}>Occasions (comma separated)</label>
-                <input style={inputStyle} className="admin-input" value={form.occasions} onChange={e => handleFormChange('occasions', e.target.value)} placeholder="Wedding, Baraat" />
-              </div>
-              <div>
-                <label style={labelStyle}>Sizes (comma separated)</label>
-                <input style={inputStyle} className="admin-input" value={form.sizes} onChange={e => handleFormChange('sizes', e.target.value)} placeholder="38, 40, 42, 44" />
-              </div>
-              <div>
-                <label style={labelStyle}>Colors (comma separated)</label>
-                <input style={inputStyle} className="admin-input" value={form.colors} onChange={e => handleFormChange('colors', e.target.value)} placeholder="Ivory Gold, Champagne" />
-              </div>
-            </div>
-
-            <div>
-              <label style={labelStyle}>Description</label>
-              <textarea
-                rows={3}
-                style={{ ...inputStyle, resize: 'vertical' }}
-                className="admin-input"
-                value={form.description}
-                onChange={e => handleFormChange('description', e.target.value)}
-                placeholder="A brief description of the product..."
-              />
-            </div>
-
-            <div className="flex gap-6">
-              <label className="flex items-center gap-2 cursor-pointer" style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--muted)' }}>
-                <input type="checkbox" checked={form.isNew} onChange={e => handleFormChange('isNew', e.target.checked)} style={{ accentColor: 'var(--gold)' }} />
-                New Arrival
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer" style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--muted)' }}>
-                <input type="checkbox" checked={form.featured} onChange={e => handleFormChange('featured', e.target.checked)} style={{ accentColor: 'var(--gold)' }} />
-                Featured
-              </label>
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              <button type="submit" className="btn-primary">
-                {editId ? 'Update Product' : 'Add to Collection'}
-              </button>
-              {editId && (
-                <button
-                  type="button"
-                  onClick={() => handleDelete(editId).then(() => { setEditId(null); setForm(EMPTY_FORM); setTab('list'); })}
-                  style={{
-                    background: 'transparent',
-                    border: '1px solid var(--red)',
-                    color: 'var(--red)',
-                    padding: '14px 24px',
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '11px',
-                    letterSpacing: '0.15em',
-                    textTransform: 'uppercase',
-                    cursor: 'pointer',
-                    clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
-                  }}
-                >
-                  Delete Product
-                </button>
-              )}
-              <button type="button" onClick={() => { setForm(EMPTY_FORM); setEditId(null); setTab('list'); }} className="btn-outline">
-                Cancel
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
-    </section>
-  );
-}
-
-// ─── Home Page ─────────────────────────────────────────────────────────────────
 const Home = () => {
   const navigate = useNavigate();
+  const { whatsappNumber, storeName } = useSettings();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All');
@@ -428,7 +94,7 @@ const Home = () => {
                 </button>
                 <button
                   className="btn-outline"
-                  onClick={() => window.open(`https://wa.me/919555835833?text=${encodeURIComponent('Hello SVG! I want to enquire about groom wear.')}`, '_blank')}
+                  onClick={() => window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hello ${storeName}! I want to enquire about groom wear.`)}`, '_blank')}
                   id="whatsapp-enquiry-btn"
                 >
                   <span className="wa-dot mr-2"></span>
@@ -565,7 +231,7 @@ const Home = () => {
           </div>
           <div className="w-full md:w-1/2 md:border-l md:pl-10" style={{ borderColor: 'var(--border)' }}>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--muted)', lineHeight: 1.9, marginBottom: '1.5rem' }}>
-              Based in the heart of Karawal Nagar, Delhi, SHRI VRINDAVAN GARMENTS has been dressing
+              Based in the heart of Karawal Nagar, Delhi, {storeName} has been dressing
               grooms for over 15 years. From a single Sherwani to a complete wedding wardrobe,
               we guarantee the best price and unmatched quality.
             </p>
@@ -573,7 +239,7 @@ const Home = () => {
               "Quality Clothing. Best Price. Trusted Choice."
             </p>
             <button
-              onClick={() => window.open(`https://wa.me/919555835833?text=${encodeURIComponent("Hello SVG! I am interested in a custom order for groom wear. Please share more details.")}`, '_blank')}
+              onClick={() => window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hello ${storeName}! I am interested in a custom order for groom wear. Please share more details.`)}`, '_blank')}
               className="btn-primary"
             >
               <span className="wa-dot mr-2"></span>
@@ -583,8 +249,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ── 6. EMBEDDED ADMIN ───────────────────────────────────── */}
-      <EmbeddedAdmin products={products} setProducts={setProducts} />
     </div>
   );
 };

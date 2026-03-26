@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Heart } from 'lucide-react';
 import { useWishlist } from '../hooks/useWishlist';
+import { useSettings } from '../hooks/useSettings';
 
 const GROOM_CATS = ['Sherwani', 'Wedding Suit', 'Nehru Jacket', 'Kurta Pajama', 'Indo-Western'];
 
@@ -11,6 +12,7 @@ const Navbar = ({ onOpenWishlist }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { wishlist } = useWishlist();
+  const { whatsappNumber, storeName } = useSettings();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -26,7 +28,7 @@ const Navbar = ({ onOpenWishlist }) => {
 
   const openWA = () =>
     window.open(
-      `https://wa.me/919555835833?text=${encodeURIComponent('Hello! I visited SVG website and would like to know more about your groom collection.')}`,
+      `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hello! I visited ${storeName} website and would like to know more about your groom collection.`)}`,
       '_blank'
     );
 
@@ -57,7 +59,7 @@ const Navbar = ({ onOpenWishlist }) => {
               onError={(e) => e.currentTarget.style.display = 'none'}
             />
             <div className="hidden sm:block">
-              <div className="brand-name">Shri Vrindavan Garments</div>
+              <div className="brand-name">{storeName || 'Shri Vrindavan Garments'}</div>
               <div className="brand-sub">The Groom's House · Delhi</div>
             </div>
           </Link>

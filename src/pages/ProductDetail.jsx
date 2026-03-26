@@ -6,6 +6,7 @@ import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 import { MessageCircle, Share2, Heart, ShieldCheck, Truck } from 'lucide-react';
 import { useWishlist } from '../hooks/useWishlist';
+import { useSettings } from '../hooks/useSettings';
 
 const colorsMap = {
   'Crimson': '#DC143C',
@@ -31,6 +32,7 @@ const ProductDetail = () => {
   const [selectedColor, setSelectedColor] = useState('');
   
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { storeName, whatsappNumber } = useSettings();
 
   useEffect(() => {
     const fetchProductData = async () => {
@@ -93,8 +95,8 @@ const ProductDetail = () => {
   const saved = isInWishlist(product.id);
   
   // Generate WhatsApp Message
-  const waMessage = `Hi SVG! I am interested in the ${product.name} (Size: ${selectedSize || 'Any'}, Color: ${selectedColor || 'Any'}). Can you please share availability and best price?`;
-  const waUrl = `https://wa.me/919555835833?text=${encodeURIComponent(waMessage)}`;
+  const waMessage = `Hi ${storeName}! I am interested in the ${product.name} (Size: ${selectedSize || 'Any'}, Color: ${selectedColor || 'Any'}). Can you please share availability and best price?`;
+  const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(waMessage)}`;
 
   return (
     <div className="min-h-screen bg-bg pt-28 pb-24">
