@@ -17,7 +17,7 @@ const WhatsAppButton = ({
   return (
     <button
       onClick={openWA}
-      className={`wa-btn-wrap cursor-none ${className}`}
+      className={`wa-btn-wrap ${className}`}
       style={{
         background: 'var(--wa)',
         color: '#fff',

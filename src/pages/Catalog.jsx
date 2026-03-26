@@ -74,7 +74,7 @@ const Catalog = () => {
           </div>
           <button
             onClick={() => setIsMobileFilterOpen(true)}
-            className="md:hidden w-full sm:w-auto flex items-center justify-center gap-2 cursor-none"
+            className="md:hidden w-full sm:w-auto flex items-center justify-center gap-2"
             style={{
               background: 'var(--gold)', color: '#0C0A08',
               border: 'none', padding: '12px 24px',
@@ -124,7 +124,7 @@ const Catalog = () => {
                 </p>
                 <button
                   onClick={() => { setSearchQuery(''); setFilters({ category: 'All', fabric: 'All', sort: 'Newest First' }); }}
-                  className="btn-outline cursor-none"
+                  className="btn-outline"
                 >
                   Clear All Filters
                 </button>

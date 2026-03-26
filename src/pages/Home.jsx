@@ -115,7 +115,7 @@ const Home = () => {
                 {HERO_CARDS.map((card, i) => (
                   <div
                     key={card.cat}
-                    className={`hcard hc${i + 1} cursor-none`}
+                    className={`hcard hc${i + 1}`}
                     onClick={() => { setActiveCategory(card.cat); scrollToCollection(); }}
                   >
                     <span className="hcard-emoji">{card.emoji}</span>

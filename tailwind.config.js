@@ -14,7 +14,7 @@ export default {
         text: 'var(--color-text)',
         muted: 'var(--color-muted)',
         border: 'var(--color-border)',
-        whatsapp: 'var(--color-whatsapp)',
+        whatsapp: 'var(--wa)',
       },
       fontFamily: {
         serif: ['"Cormorant Garamond"', 'serif'],

@@ -38,7 +38,7 @@ const Footer = () => {
             </p>
             <button
               onClick={() => openWA("Hello SVG! I want to enquire about groom wear collection.")}
-              className="wa-btn-wrap cursor-none"
+              className="wa-btn-wrap"
               style={{
                 background: 'var(--wa)',
                 color: '#fff',
@@ -71,7 +71,7 @@ const Footer = () => {
                 <li key={cat}>
                   <button
                     onClick={() => setFilter(cat)}
-                    className="cursor-none transition-colors hover:text-gold"
+                    className=" transition-colors hover:text-gold"
                     style={{ background: 'none', border: 'none', color: 'var(--muted)', cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase' }}
                     onMouseEnter={e => e.target.style.color = 'var(--gold)'}
                     onMouseLeave={e => e.target.style.color = 'var(--muted)'}

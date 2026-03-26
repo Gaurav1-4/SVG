@@ -54,7 +54,7 @@ const ProductCard = ({ product }) => {
       <button
         ref={heartRef}
         onClick={handleWishlist}
-        className={`card-save ${saved ? 'saved' : ''} absolute top-4 right-4 z-20 w-9 h-9 rounded-full flex items-center justify-center cursor-none`}
+        className={`card-save ${saved ? 'saved' : ''} absolute top-4 right-4 z-20 w-9 h-9 rounded-full flex items-center justify-center`}
         style={{
           background: saved ? 'var(--gold)' : 'rgba(20,18,16,0.8)',
           border: '1px solid var(--border)',
@@ -70,7 +70,7 @@ const ProductCard = ({ product }) => {
       {/* Image Container */}
       <div className="card-img-wrap">
         {!imageLoaded && <div className="absolute inset-0 skeleton" />}
-        <Link to={`/product/${product.id}`} className="cursor-none">
+        <Link to={`/product/${product.id}`} className="">
           <img
             src={product.images?.[0] || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80'}
             alt={product.name}
@@ -83,7 +83,7 @@ const ProductCard = ({ product }) => {
 
         {/* Card Overlay */}
         <div className="card-overlay">
-          <button onClick={openWA} className="card-overlay-btn cursor-none">
+          <button onClick={openWA} className="card-overlay-btn">
             <span className="wa-dot"></span>
             &nbsp; Enquire on WhatsApp
           </button>
@@ -105,7 +105,7 @@ const ProductCard = ({ product }) => {
       <div className="p-4 space-y-1" style={{ background: 'var(--surface)' }}>
         <div className="card-category">{product.category}</div>
         <h3 className="card-name line-clamp-2">
-          <Link to={`/product/${product.id}`} className="cursor-none hover:text-primary transition-colors">
+          <Link to={`/product/${product.id}`} className=" hover:text-primary transition-colors">
             {product.name}
           </Link>
         </h3>

@@ -19,9 +19,9 @@
     --border2:     #D4C99A;
     --wa:          #25D366;
     --red:         #C0392B;
-    --shadow-sm:   0 2px 8px rgba(0,0,0,0.06);
-    --shadow-md:   0 8px 32px rgba(0,0,0,0.08);
-    --shadow-lg:   0 20px 60px rgba(0,0,0,0.10);
+    --shadow-sm:   0 4px 12px rgba(0,0,0,0.03);
+    --shadow-md:   0 12px 40px rgba(0,0,0,0.05);
+    --shadow-lg:   0 30px 80px rgba(0,0,0,0.08);
 
     /* Keep legacy aliases for backward compat with Tailwind classes */
     --cream:       var(--surface);
@@ -64,40 +64,6 @@
     background: var(--gold-light);
     color: var(--text);
   }
-}
-
-/* ─── CUSTOM CURSOR ─────────────────────────────────────────────── */
-body { cursor: none; }
-
-#cursor {
-  position: fixed;
-  width: 10px; height: 10px;
-  background: var(--gold);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99999;
-  transform: translate(-50%, -50%);
-  transition: width 0.2s ease, height 0.2s ease;
-}
-#cursor.hovered { width: 18px; height: 18px; }
-
-#cursor-ring {
-  position: fixed;
-  width: 32px; height: 32px;
-  border: 1px solid var(--gold);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99998;
-  transform: translate(-50%, -50%);
-  transition: all 0.15s ease;
-  opacity: 0.4;
-}
-#cursor-ring.hovered { width: 46px; height: 46px; opacity: 0.7; }
-
-/* Hide cursor on mobile/touch */
-@media (pointer: coarse) {
-  body { cursor: auto; }
-  #cursor, #cursor-ring { display: none; }
 }
 
 /* ─── SCROLLBAR ─────────────────────────────────────────────────── */
@@ -613,8 +579,7 @@ body { cursor: none; }
   background: var(--surface);
   border: 1px solid var(--border);
   overflow: hidden;
-  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.3s, border-color 0.3s;
-  cursor: none;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease, border-color 0.3s;
 }
 
 .svg-card:hover {
@@ -881,6 +846,43 @@ body { cursor: none; }
   background: var(--gold);
   color: #0C0A08;
   border-color: var(--gold);
+}/* ─── EXTRA AESTHETIC ANIMATIONS ────────────────────────────────── */
+@keyframes fadeLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes visualFloatSlow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes shine {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+
+.animate-fade-in { animation: fadeIn 1s ease forwards; }
+.animate-float { animation: visualFloat 4s ease-in-out infinite; }
+.animate-float-slow { animation: visualFloatSlow 6s ease-in-out infinite; }
+
+.hover-shine {
+  position: relative;
+  overflow: hidden;
+}
+.hover-shine::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+  transform: skewX(-15deg);
+  transition: all 0.75s;
+}
+.hover-shine:hover::after {
+  animation: shine 1.5s ease;
 }
 
 /* ─── ABOUT & BRAND STRIP ───────────────────────────────────────── */

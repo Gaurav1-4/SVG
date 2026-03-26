@@ -49,7 +49,7 @@ const Navbar = ({ onOpenWishlist }) => {
         <div className="flex justify-between items-center h-full">
 
           {/* Left: Brand */}
-          <Link to="/" className="brand-area cursor-none">
+          <Link to="/" className="brand-area">
             <img
               src="/images/svg-logo.png"
               alt="Shri Vrindavan Garments"
@@ -70,7 +70,7 @@ const Navbar = ({ onOpenWishlist }) => {
               <button
                 key={cat}
                 onClick={() => navigate(`/catalog?category=${cat}`)}
-                className="cursor-none"
+                className=""
               >
                 {cat}
               </button>
@@ -83,7 +83,7 @@ const Navbar = ({ onOpenWishlist }) => {
               <Link
                 key={link.name}
                 to={link.path}
-                className={`nav-link cursor-none ${location.pathname === link.path ? 'active' : ''}`}
+                className={`nav-link ${location.pathname === link.path ? 'active' : ''}`}
               >
                 {link.name}
               </Link>
@@ -91,7 +91,7 @@ const Navbar = ({ onOpenWishlist }) => {
 
             <button
               onClick={onOpenWishlist}
-              className="relative cursor-none"
+              className="relative"
               style={{ color: wishlist.length > 0 ? 'var(--gold)' : 'var(--muted)' }}
               title="Saved Items"
             >
@@ -111,7 +111,7 @@ const Navbar = ({ onOpenWishlist }) => {
 
             <button
               onClick={openWA}
-              className="wa-btn-wrap cursor-none"
+              className="wa-btn-wrap"
               style={{
                 fontFamily: 'var(--font-body)',
                 fontSize: '10px',
@@ -129,7 +129,7 @@ const Navbar = ({ onOpenWishlist }) => {
           <div className="md:hidden flex items-center gap-4">
             <button
               onClick={onOpenWishlist}
-              className="cursor-none"
+              className=""
               style={{ color: wishlist.length > 0 ? 'var(--gold)' : 'var(--muted)' }}
             >
               <Heart size={22} className={wishlist.length > 0 ? 'fill-current' : ''} />
@@ -144,7 +144,7 @@ const Navbar = ({ onOpenWishlist }) => {
             </button>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="cursor-none"
+              className=""
               style={{ color: 'var(--muted)' }}
             >
               {isOpen ? <X size={26} /> : <Menu size={26} />}
@@ -168,7 +168,7 @@ const Navbar = ({ onOpenWishlist }) => {
               <button
                 key={cat}
                 onClick={() => { navigate(`/catalog?category=${cat}`); setIsOpen(false); }}
-                className="block w-full text-left py-3 border-b cursor-none"
+                className="block w-full text-left py-3 border-b"
                 style={{
                   borderColor: '#E8E4DC',
                   color: '#8A8A8A',
@@ -186,7 +186,7 @@ const Navbar = ({ onOpenWishlist }) => {
                 key={link.name}
                 to={link.path}
                 onClick={() => setIsOpen(false)}
-                className="block w-full text-left py-3 border-b cursor-none"
+                className="block w-full text-left py-3 border-b"
                 style={{
                   borderColor: '#E8E4DC',
                   color: location.pathname === link.path ? '#B8960C' : '#1A1A1A',
