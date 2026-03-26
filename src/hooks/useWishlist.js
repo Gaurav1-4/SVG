@@ -7,14 +7,30 @@ export const useWishlist = () => {
   const { showToast } = useToast();
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('tr_traders_wishlist');
-      if (stored) {
-        setWishlist(JSON.parse(stored));
+    const syncWishlist = () => {
+      try {
+        const stored = localStorage.getItem('tr_traders_wishlist');
+        if (stored) {
+          setWishlist(JSON.parse(stored));
+        } else {
+          setWishlist([]);
+        }
+      } catch (e) {
+        console.warn("Could not load wishlist from localStorage");
       }
-    } catch (e) {
-      console.warn("Could not load wishlist from localStorage");
-    }
+    };
+
+    // Initial load
+    syncWishlist();
+
+    // Listen to our custom local event and cross-tab storage changes
+    window.addEventListener('wishlistUpdated', syncWishlist);
+    window.addEventListener('storage', syncWishlist);
+
+    return () => {
+      window.removeEventListener('wishlistUpdated', syncWishlist);
+      window.removeEventListener('storage', syncWishlist);
+    };
   }, []);
 
   const toggleWishlist = (productId) => {
@@ -25,6 +41,9 @@ export const useWishlist = () => {
         : [...prev, productId];
       
       localStorage.setItem('tr_traders_wishlist', JSON.stringify(newWishlist));
+      
+      // Notify other components immediately
+      window.dispatchEvent(new Event('wishlistUpdated'));
       
       if (isRemoving) {
         showToast('Removed from Wishlist');

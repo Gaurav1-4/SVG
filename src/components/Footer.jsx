@@ -131,7 +131,10 @@ const Footer = () => {
           style={{ borderTop: '1px solid var(--border)', color: 'var(--muted)', opacity: 0.6 }}
         >
           <p>© 2025 Shri Vrindavan Garments · Karawal Nagar, Delhi</p>
-          <p className="mt-2 md:mt-0">Men's Wedding & Occasion Wear · Wholesale & Retail</p>
+          <div className="flex items-center gap-6 mt-2 md:mt-0">
+            <p>Men's Wedding & Occasion Wear · Wholesale & Retail</p>
+            <a href="/admin-panel" className="text-[10px] uppercase tracking-widest hover:text-gold transition-colors underline decoration-transparent hover:decoration-gold underline-offset-4" title="Staff Portal">Admin</a>
+          </div>
         </div>
       </div>
     </footer>
