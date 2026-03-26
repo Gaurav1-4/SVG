@@ -188,7 +188,7 @@ tbody tr:hover .action-btns{opacity:1}
     <div class="aside-footer">
       <button class="logout-btn" onclick="doLogout()">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Logout
+        Logout to Storefront
       </button>
     </div>
   </aside>
@@ -308,7 +308,9 @@ tbody tr:hover .action-btns{opacity:1}
         <div class="field"><label>Status</label>
           <select id="f_status"><option value="active">Active</option><option value="hidden">Hidden</option></select>
         </div>
-        <div class="field form-full"><label>Image URL</label><input type="url" id="f_image" placeholder="https://…"></div>
+        <div class="field form-full"><label>Local Images (Multiple allowed)</label><input type="file" id="f_image" accept="image/*" multiple></div>
+        <div class="field"><label>Colors (Comma separated)</label><input type="text" id="f_colors" placeholder="e.g. Navy, Emerald, Ivory"></div>
+        <div class="field"><label>Sizes (Comma separated)</label><input type="text" id="f_sizes" placeholder="e.g. 38, 40, S, M, L"></div>
         <div class="field form-full"><label>Description</label><textarea id="f_desc" rows="3" placeholder="Describe the product…"></textarea></div>
       </div>
     </div>
@@ -379,7 +381,7 @@ function doLogin(){
 
 function doLogout(){
   sessionStorage.removeItem(AUTH_KEY);
-  location.reload();
+  window.location.href = '/';
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
@@ -501,10 +503,14 @@ function openProductModal(id){
     document.getElementById('f_fabric').value   = p.fabric||'';
     document.getElementById('f_price').value    = p.price||'';
     document.getElementById('f_status').value   = p.status||'active';
-    document.getElementById('f_image').value    = (p.images||[])[0]||p.image||'';
+    document.getElementById('f_colors').value   = (p.colors||[]).join(', ');
+    document.getElementById('f_sizes').value    = (p.sizes||[]).join(', ');
     document.getElementById('f_desc').value     = p.description||'';
+    
+    // Reset file input on edit because we can't repopulate it automatically due to security
+    document.getElementById('f_image').value = ''; 
   } else {
-    ['f_name','f_fabric','f_price','f_image','f_desc'].forEach(id=>document.getElementById(id).value='');
+    ['f_name','f_fabric','f_price','f_image','f_desc','f_colors','f_sizes'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('f_status').value='active';
   }
   document.getElementById('prodModal').classList.add('open');
@@ -514,26 +520,63 @@ function editProduct(id){ openProductModal(id); }
 
 function closeProdModal(){ document.getElementById('prodModal').classList.remove('open'); }
 
-function saveProduct(){
+const file2Base64 = (file) => new Promise((res, rej) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => res(reader.result);
+  reader.onerror = error => rej(error);
+});
+
+async function saveProduct() {
   const name = document.getElementById('f_name').value.trim();
   const fabric = document.getElementById('f_fabric').value.trim();
   if(!name||!fabric){ toast('Name and Fabric are required','err'); return; }
+
+  const filesRaw = document.getElementById('f_image').files;
+  let newImages = [];
+  if(filesRaw && filesRaw.length > 0) {
+    try {
+      newImages = await Promise.all(Array.from(filesRaw).map(file2Base64));
+    } catch (e) {
+      toast('Failed to process image files', 'err');
+      return;
+    }
+  }
+
+  const rawColors = document.getElementById('f_colors').value;
+  const rawSizes = document.getElementById('f_sizes').value;
 
   const data = {
     name, fabric,
     category: document.getElementById('f_category').value,
     price: Number(document.getElementById('f_price').value)||0,
     status: document.getElementById('f_status').value,
-    images: [document.getElementById('f_image').value].filter(Boolean),
     description: document.getElementById('f_desc').value.trim(),
+    colors: rawColors ? rawColors.split(',').map(s=>s.trim()).filter(Boolean) : [],
+    sizes: rawSizes ? rawSizes.split(',').map(s=>s.trim()).filter(Boolean) : []
   };
 
   let prods = getProducts();
   if(editingProdId){
-    prods = prods.map(p=>p.id===editingProdId?{...p,...data}:p);
+    prods = prods.map(p => {
+      if (p.id === editingProdId) {
+        // If they uploaded new images, replace old ones, else keep old
+        const updatedImages = newImages.length > 0 ? newImages : (p.images || []);
+        return {...p, ...data, images: updatedImages};
+      }
+      return p;
+    });
     toast('Product updated!');
   } else {
-    prods.unshift({...data, id:'prod_'+Date.now(), stock:'in_stock', featured:false, isNew:true, createdAt:new Date().toISOString()});
+    prods.unshift({
+      ...data, 
+      id:'prod_'+Date.now(), 
+      stock:'in_stock', 
+      featured:false, 
+      isNew:true, 
+      images: newImages,
+      createdAt:new Date().toISOString()
+    });
     toast('Product added!');
   }
   saveProducts(prods);

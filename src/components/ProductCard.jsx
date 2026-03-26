@@ -81,13 +81,7 @@ const ProductCard = ({ product }) => {
           />
         </Link>
 
-        {/* Card Overlay */}
-        <div className="card-overlay">
-          <button onClick={openWA} className="card-overlay-btn">
-            <span className="wa-dot"></span>
-            &nbsp; Enquire on WhatsApp
-          </button>
-        </div>
+
 
         {/* Tags */}
         <div className="absolute top-4 left-4 flex flex-col gap-2 z-10 pointer-events-none">
@@ -121,6 +115,15 @@ const ProductCard = ({ product }) => {
             </span>
           )}
         </div>
+        
+        {/* Mobile-friendly Enquire Button */}
+        <button 
+          onClick={openWA} 
+          className="w-full mt-3 py-2 text-xs uppercase tracking-widest font-bold border border-border rounded text-muted hover:text-green-600 hover:border-green-600 transition-colors flex items-center justify-center gap-2"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+          Enquire
+        </button>
       </div>
     </div>
   );

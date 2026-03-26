@@ -30,6 +30,7 @@ const ProductDetail = () => {
   // Selections
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
   
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { storeName, whatsappNumber } = useSettings();
@@ -99,7 +100,7 @@ const ProductDetail = () => {
   const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(waMessage)}`;
 
   return (
-    <div className="min-h-screen bg-bg pt-28 pb-24">
+    <div className="min-h-screen bg-bg pt-20 pb-12 md:pt-28 md:pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Breadcrumb */}
@@ -176,9 +177,9 @@ const ProductDetail = () => {
               <div className="mb-8">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-sm font-bold uppercase tracking-widest text-text">Select Size</h3>
-                  <button className="text-xs tracking-wider text-primary underline">Size Guide</button>
+                  <button onClick={() => setShowSizeGuide(true)} className="text-xs tracking-wider text-primary underline">Size Guide</button>
                 </div>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2 md:gap-3">
                   {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map(size => {
                     const isAvailable = product.sizes.includes(size);
                     // For mock variety, let's say XXL is sold out if it's not explicitly passed
@@ -235,8 +236,11 @@ const ProductDetail = () => {
             )}
 
             {/* Description */}
-            <div className="mb-8 prose prose-sm text-muted">
-              <p>{product.description || "Beautifully crafted ethnic wear blending traditional artistry with modern silhouettes. A must-have for your wardrobe."}</p>
+            <div className="mb-6 border-b border-border pb-6">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-text mb-3 border-t border-border pt-6">Product Details</h3>
+              <div className="prose prose-sm text-muted">
+                <p>{product.description || "Beautifully crafted ethnic wear blending traditional artistry with modern silhouettes. A must-have for your wardrobe."}</p>
+              </div>
             </div>
 
             {/* Actions */}
@@ -288,6 +292,42 @@ const ProductDetail = () => {
         )}
 
       </div>
+      {/* Size Guide Modal */}
+      {showSizeGuide && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/60" onClick={() => setShowSizeGuide(false)} />
+          <div className="relative bg-bg w-full max-w-md rounded-xl p-6 shadow-2xl animate-fade-up">
+            <h3 className="text-xl font-serif mb-4 flex justify-between items-center">
+              Size Reference Guide
+              <button onClick={() => setShowSizeGuide(false)} className="text-muted hover:text-text text-2xl">&times;</button>
+            </h3>
+            <p className="text-sm text-muted mb-6">Measurements are in inches. For a loose fit, we recommend going one size up from your exact chest measurement.</p>
+            
+            <div className="overflow-x-auto border border-border rounded">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-surface2">
+                  <tr>
+                    <th className="p-3 border-b border-r border-border font-medium">Size</th>
+                    <th className="p-3 border-b border-r border-border font-medium">Chest</th>
+                    <th className="p-3 border-b border-border font-medium">Length</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td className="p-3 border-b border-r border-border">S (38)</td><td className="p-3 border-b border-r border-border">38-39"</td><td className="p-3 border-b border-border">38"</td></tr>
+                  <tr><td className="p-3 border-b border-r border-border">M (40)</td><td className="p-3 border-b border-r border-border">40-41"</td><td className="p-3 border-b border-border">40"</td></tr>
+                  <tr><td className="p-3 border-b border-r border-border">L (42)</td><td className="p-3 border-b border-r border-border">42-43"</td><td className="p-3 border-b border-border">42"</td></tr>
+                  <tr><td className="p-3 border-b border-r border-border">XL (44)</td><td className="p-3 border-b border-r border-border">44-45"</td><td className="p-3 border-b border-border">43"</td></tr>
+                  <tr><td className="p-3 border-r border-border">XXL (46)</td><td className="p-3 border-r border-border">46-47"</td><td className="p-3">44"</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <button onClick={() => setShowSizeGuide(false)} className="w-full mt-6 py-3 bg-text text-bg uppercase tracking-widest text-xs font-bold rounded">
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
