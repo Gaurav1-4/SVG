@@ -950,3 +950,9 @@
 input[type="range"] { accent-color: var(--gold); }
 input[type="checkbox"] { accent-color: var(--gold); }
 select { background-color: var(--surface); color: var(--text); border-color: var(--border); }
+
+/* Custom Animations */
+@keyframes hero-zoom {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}

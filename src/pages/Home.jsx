@@ -61,73 +61,41 @@ const Home = () => {
   return (
     <div className="flex flex-col min-h-screen" style={{ background: 'var(--bg)' }}>
 
-      {/* ── 1. HERO ───────────────────────────────────────────────── */}
-      <div className="hero-section pt-[68px]">
-        <div className="hero-grid" />
+      {/* ── 1. CINEMATIC LUXURY HERO ───────────────────────────────────────────────── */}
+      <div className="relative w-full h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
+        
+        {/* Background Image (Palace + Grooms) with slow zoom */}
+        <div 
+          className="absolute inset-0 w-full h-full bg-cover bg-bottom md:bg-center scale-105 animate-[hero-zoom_20s_ease-out_infinite_alternate]"
+          style={{ 
+            backgroundImage: 'url("https://images.unsplash.com/photo-1583391733981-8498408ee4b6?q=80&w=2000&auto=format&fit=crop")',
+            /* Fallback to another beautiful wedding if the first fails visually: photo-1595341595379-cf1cd0ed7ad1 */
+          }}
+        />
 
-        {/* Trust bar */}
-        <div className="trust-bar">
-          <span>★ 4.9/5 Google Rating</span>
-          <span>📍 Karawal Nagar, Delhi</span>
-          <span>🕐 10:00 AM – 8:30 PM</span>
-          <span>👑 The Groom's House</span>
+        {/* Soft dark gradient overlay for text readability without losing the background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-transparent" />
+        
+        {/* Bottom vignette to ground the models */}
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/20 to-transparent" />
+
+        {/* Centered Typography Content */}
+        <div className="relative z-10 flex flex-col items-center text-center px-4 mt-16 md:mt-24 w-full animate-fade-up">
+          
+          <h1 className="font-serif text-[#EAE2C6] text-4xl sm:text-5xl md:text-6xl lg:text-[76px] tracking-wide uppercase font-light leading-tight drop-shadow-md">
+            Shri Vrindavan Garments
+          </h1>
+          
+          <h2 className="font-serif text-[#D4C99A] text-xs sm:text-sm md:text-base tracking-[0.3em] uppercase mt-4 md:mt-6 mb-2 drop-shadow">
+            Curators of Royal Menswear
+          </h2>
+          
+          <p className="font-serif text-white/80 text-[10px] sm:text-xs tracking-[0.4em] uppercase font-light drop-shadow">
+            Jaipur • Rajasthan
+          </p>
+          
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
-          <div className="flex flex-col lg:flex-row items-center gap-16">
-
-            {/* Left: Content */}
-            <div className="flex-1 max-w-2xl lg:max-w-none">
-              <div className="hero-eyebrow mb-4">New Collection 2025 · Delhi's Finest</div>
-              <h1 className="hero-title">
-                Dressed for<br />
-                <em>Your Grand</em><br />
-                Day.
-              </h1>
-              <p className="hero-desc mb-10">
-                Sherwani, Suit, Nehru Jacket, Kurta Pajama — every style a groom could dream of.
-                Crafted for the man who deserves to look extraordinary on his most important day.
-              </p>
-              <div className="hero-actions mb-12 flex-wrap">
-                <button className="btn-primary" onClick={scrollToCollection} id="browse-collection-btn">
-                  Browse Collection
-                </button>
-                <button
-                  className="btn-outline"
-                  onClick={() => window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hello ${storeName}! I want to enquire about groom wear.`)}`, '_blank')}
-                  id="whatsapp-enquiry-btn"
-                >
-                  <span className="wa-dot mr-2"></span>
-                  WhatsApp Enquiry
-                </button>
-              </div>
-              <div className="hero-stats flex-wrap">
-                <div><span className="stat-num">{productCount}+</span><span className="stat-label">Products</span></div>
-                <div><span className="stat-num">4.9★</span><span className="stat-label">Google</span></div>
-                <div><span className="stat-num">975+</span><span className="stat-label">Customers</span></div>
-                <div><span className="stat-num">15+</span><span className="stat-label">Years</span></div>
-              </div>
-            </div>
-
-            {/* Right: Floating card stack */}
-            <div className="hidden lg:flex flex-col items-center gap-6" style={{ opacity: 0, animation: 'fadeRight 0.7s ease forwards 0.6s' }}>
-              <div className="hero-card-stack">
-                {HERO_CARDS.map((card, i) => (
-                  <div
-                    key={card.cat}
-                    className={`hcard hc${i + 1}`}
-                    onClick={() => { setActiveCategory(card.cat); scrollToCollection(); }}
-                  >
-                    <span className="hcard-emoji">{card.emoji}</span>
-                    <span className="hcard-label">{card.label}</span>
-                    <div className="hcard-border" />
-                  </div>
-                ))}
-                <div className="hero-badge">The Groom's House</div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* ── 2. MARQUEE ───────────────────────────────────────────── */}
