@@ -140,6 +140,13 @@ tbody tr:hover .action-btns{opacity:1}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 @keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:none}}
 @keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+/* ── STORAGE BAR ── */
+.storage-wrap{margin-top:2rem;background:var(--surface2);padding:1rem;border:1px solid var(--border)}
+.storage-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin:.5rem 0}
+.storage-fill{height:100%;background:var(--gold);transition:width .3s}
+.storage-fill.warn{background:var(--amber)}
+.storage-fill.crit{background:var(--red)}
+.storage-text{font-size:10px;color:var(--muted);display:flex;justify-content:space-between}
 </style>
 </head>
 <body>
@@ -255,16 +262,28 @@ tbody tr:hover .action-btns{opacity:1}
       <div class="panel" style="max-width:700px">
         <div class="panel-header"><span class="panel-title">Video Showcase (Hero)</span></div>
         <div class="modal-body">
-          <p style="font-size:11px;color:var(--muted);margin-bottom:1.5rem">Provide up to 3 video URLs (Direct mp4/webm or YouTube/Instagram links) to display in the home page lookbook.</p>
+          <p style="font-size:11px;color:var(--muted);margin-bottom:1.5rem">Upload videos from your device (Max 2MB recommended) OR provide a URL.</p>
           <div class="form-grid">
-            <div class="field form-full"><label>Video 1 URL</label><input type="text" id="v_url1" placeholder="https://…"></div>
+            <!-- Video 1 -->
             <div class="field form-full"><label>Video 1 Label</label><input type="text" id="v_label1" placeholder="e.g. Sherwani Collection"></div>
+            <div class="field"><label>Video 1 File</label><input type="file" id="v_file1" accept="video/*"></div>
+            <div class="field"><label>OR Video 1 URL</label><input type="text" id="v_url1" placeholder="https://…"></div>
             
-            <div class="field form-full" style="margin-top:1rem"><label>Video 2 URL</label><input type="text" id="v_url2" placeholder="https://…"></div>
-            <div class="field form-full"><label>Video 2 Label</label><input type="text" id="v_label2" placeholder="e.g. Wedding Suits"></div>
+            <!-- Video 2 -->
+            <div class="field form-full" style="margin-top:1.5rem;border-top:1px dashed var(--border);padding-top:1rem"><label>Video 2 Label</label><input type="text" id="v_label2" placeholder="e.g. Wedding Suits"></div>
+            <div class="field"><label>Video 2 File</label><input type="file" id="v_file2" accept="video/*"></div>
+            <div class="field"><label>OR Video 2 URL</label><input type="text" id="v_url2" placeholder="https://…"></div>
             
-            <div class="field form-full" style="margin-top:1rem"><label>Video 3 URL</label><input type="text" id="v_url3" placeholder="https://…"></div>
-            <div class="field form-full"><label>Video 3 Label</label><input type="text" id="v_label3" placeholder="e.g. Kurta Pajama"></div>
+            <!-- Video 3 -->
+            <div class="field form-full" style="margin-top:1.5rem;border-top:1px dashed var(--border);padding-top:1rem"><label>Video 3 Label</label><input type="text" id="v_label3" placeholder="e.g. Kurta Pajama"></div>
+            <div class="field"><label>Video 3 File</label><input type="file" id="v_file3" accept="video/*"></div>
+            <div class="field"><label>OR Video 3 URL</label><input type="text" id="v_url3" placeholder="https://…"></div>
+          </div>
+
+          <div class="storage-wrap">
+            <div class="storage-text"><span>Local Storage Usage</span><span id="storageVal">0% (0 / 5MB)</span></div>
+            <div class="storage-bar"><div id="storageFill" class="storage-fill" style="width:0%"></div></div>
+            <p style="font-size:9px;color:var(--muted);margin-top:6px">Browser limit is 5MB. Large videos may prevent saving. Pasting URLs is safer for storage.</p>
           </div>
         </div>
         <div class="panel-header" style="border-top:1px solid var(--border)"><span class="panel-title">General Settings</span></div>
@@ -284,7 +303,7 @@ tbody tr:hover .action-btns{opacity:1}
             </div>
             <div class="field form-full">
               <label>Address</label>
-              <textarea id="s_address" rows="3"></textarea>
+              <input type="text" id="s_address">
             </div>
             <div class="field">
               <label>Admin Password</label>
@@ -610,6 +629,16 @@ function toggleStatus(id){
   toast('Status updated');
 }
 
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function file2Base64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 // ─── SETTINGS ────────────────────────────────────────────────────────────────
 const VIDEO_KEY = 'svg_video_showcase';
 
@@ -618,7 +647,7 @@ function loadSettings(){
   document.getElementById('s_storeName').value = s.storeName || '';
   document.getElementById('s_wa').value        = s.whatsappNumber || '';
   document.getElementById('s_email').value     = s.email || '';
-  document.getElementById('s_address').value   = s.address || '';
+  if (document.getElementById('s_address')) document.getElementById('s_address').value = s.address || '';
 
   // load videos
   try {
@@ -627,16 +656,35 @@ function loadSettings(){
       const item = v[i-1] || {};
       document.getElementById('v_url'+i).value = item.url || '';
       document.getElementById('v_label'+i).value = item.label || '';
+      // Cannot set file input value, it's read-only
     }
   } catch(e) {}
+  updateStorageIndicator();
 }
 
-function saveSettings(){
+function updateStorageIndicator() {
+  const total = 5 * 1024 * 1024; // 5MB
+  let used = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    used += (localStorage.getItem(key).length + key.length) * 2; // approximation for UTF-16
+  }
+  const pct = Math.min(100, Math.round((used / total) * 100));
+  const fill = document.getElementById('storageFill');
+  const txt = document.getElementById('storageVal');
+  if (fill && txt) {
+    fill.style.width = pct + '%';
+    fill.className = 'storage-fill ' + (pct > 85 ? 'crit' : pct > 60 ? 'warn' : '');
+    txt.textContent = `${pct}% (${(used / (1024 * 1024)).toFixed(2)} / 5MB)`;
+  }
+}
+
+async function saveSettings(){
   const s = getSettings();
   s.storeName      = document.getElementById('s_storeName').value;
   s.whatsappNumber = document.getElementById('s_wa').value;
   s.email          = document.getElementById('s_email').value;
-  s.address        = document.getElementById('s_address').value;
+  if (document.getElementById('s_address')) s.address = document.getElementById('s_address').value;
   
   const newPw = document.getElementById('s_password').value;
   if(newPw) localStorage.setItem(PW_KEY, newPw);
@@ -645,16 +693,38 @@ function saveSettings(){
 
   // save videos
   const v = [];
+  const currentV = JSON.parse(localStorage.getItem(VIDEO_KEY) || '[]');
+  
   for(let i=1; i<=3; i++) {
-    v.push({
-      url: document.getElementById('v_url'+i).value,
-      label: document.getElementById('v_label'+i).value
-    });
-  }
-  localStorage.setItem(VIDEO_KEY, JSON.stringify(v));
+    const label = document.getElementById('v_label'+i).value;
+    const urlInp = document.getElementById('v_url'+i).value;
+    const fileInp = document.getElementById('v_file'+i).files[0];
+    
+    let finalUrl = urlInp;
+    if (fileInp) {
+      try {
+        finalUrl = await file2Base64(fileInp);
+        toast(`Video ${i} uploaded locally`);
+      } catch (e) {
+        toast(`Failed to read Video ${i}`, 'err');
+      }
+    } else if (!urlInp && currentV[i-1]?.url?.startsWith('data:video')) {
+      // Keep existing local video if no new file or url provided
+      finalUrl = currentV[i-1].url;
+    }
 
-  toast('Settings saved!');
-  document.getElementById('s_password').value = '';
+    v.push({ url: finalUrl, label: label });
+  }
+  
+  try {
+    localStorage.setItem(VIDEO_KEY, JSON.stringify(v));
+    toast('Settings saved!');
+    updateStorageIndicator();
+  } catch (e) {
+    toast('STORAGE FULL! Video too large.', 'err');
+  }
+  
+  if (document.getElementById('s_password')) document.getElementById('s_password').value = '';
 }
 function deleteProduct(id){
   if(!confirm('Delete this product? This cannot be undone.')) return;
