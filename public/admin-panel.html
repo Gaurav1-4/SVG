@@ -390,11 +390,30 @@ const SETT_KEY  = 'tr_traders_settings';
 const AUTH_KEY  = 'svg_admin_panel_auth';
 const PW_KEY    = 'svg_admin_password';
 const DEFAULT_PW = 'svg2025';
+const VIDEO_KEY = 'svg_video_showcase';
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function toast(msg, type=''){
+  const w = document.getElementById('toastWrap');
+  if (!w) return;
+  const t = document.createElement('div');
+  t.className = 'toast'+(type?' '+type:'');
+  t.textContent = msg;
+  w.appendChild(t);
+  setTimeout(()=>t.remove(), 3000);
+}
+
+function file2Base64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 // ─── AUTH ────────────────────────────────────────────────────────────────────
 function getPassword(){ return localStorage.getItem(PW_KEY) || DEFAULT_PW; }
-
-document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 
 function doLogin(){
   const v = document.getElementById('pwInput').value.trim();
@@ -416,8 +435,10 @@ function doLogin(){
   } else {
     err.textContent='Incorrect password. Try again.';
     const inp = document.getElementById('pwInput');
-    inp.classList.add('shake');
-    setTimeout(()=>inp.classList.remove('shake'),450);
+    if (inp) {
+      inp.classList.add('shake');
+      setTimeout(()=>inp.classList.remove('shake'),450);
+    }
   }
 }
 
@@ -425,6 +446,12 @@ function doLogout(){
   sessionStorage.removeItem(AUTH_KEY);
   window.location.href = '/';
 }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') {
+    doLogin();
+  }
+});
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
 function initApp(){
@@ -464,7 +491,6 @@ function renderDashboard(){
   const prods  = getProducts();
   const enqs   = getEnquiries();
   const active = prods.filter(p=>p.status==='active').length;
-  const attn   = prods.filter(p=>p.stock==='low_stock'||p.stock==='out_of_stock').length;
   const cats   = new Set(prods.map(p=>p.category)).size;
 
   document.getElementById('statsGrid').innerHTML = `
@@ -523,7 +549,7 @@ function renderProducts(){
           <button class="icon-btn" onclick="toggleStatus('${p.id}')" title="${p.status==='active'?'Hide':'Publish'}">
             ${p.status==='active'?'<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>':'<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'}
           </button>
-          <button class="icon-btn" onclick="editProduct('${p.id}')" title="Edit">
+          <button class="icon-btn" onclick="openProductModal('${p.id}')" title="Edit">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
           <button class="icon-btn del" onclick="deleteProduct('${p.id}')" title="Delete">
@@ -548,8 +574,6 @@ function openProductModal(id){
     document.getElementById('f_colors').value   = (p.colors||[]).join(', ');
     document.getElementById('f_sizes').value    = (p.sizes||[]).join(', ');
     document.getElementById('f_desc').value     = p.description||'';
-    
-    // Reset file input on edit because we can't repopulate it automatically due to security
     document.getElementById('f_image').value = ''; 
   } else {
     ['f_name','f_fabric','f_price','f_image','f_desc','f_colors','f_sizes'].forEach(id=>document.getElementById(id).value='');
@@ -558,16 +582,7 @@ function openProductModal(id){
   document.getElementById('prodModal').classList.add('open');
 }
 
-function editProduct(id){ openProductModal(id); }
-
 function closeProdModal(){ document.getElementById('prodModal').classList.remove('open'); }
-
-const file2Base64 = (file) => new Promise((res, rej) => {
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = () => res(reader.result);
-  reader.onerror = error => rej(error);
-});
 
 async function saveProduct() {
   const name = document.getElementById('f_name').value.trim();
@@ -602,7 +617,6 @@ async function saveProduct() {
   if(editingProdId){
     prods = prods.map(p => {
       if (p.id === editingProdId) {
-        // If they uploaded new images, replace old ones, else keep old
         const updatedImages = newImages.length > 0 ? newImages : (p.images || []);
         return {...p, ...data, images: updatedImages};
       }
@@ -638,103 +652,6 @@ function toggleStatus(id){
   toast('Status updated');
 }
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
-function file2Base64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-// ─── SETTINGS ────────────────────────────────────────────────────────────────
-const VIDEO_KEY = 'svg_video_showcase';
-
-function loadSettings(){
-  const s = getSettings();
-  document.getElementById('s_storeName').value = s.storeName || '';
-  document.getElementById('s_wa').value        = s.whatsappNumber || '';
-  document.getElementById('s_email').value     = s.email || '';
-  if (document.getElementById('s_address')) document.getElementById('s_address').value = s.address || '';
-
-  // load videos
-  try {
-    const v = JSON.parse(localStorage.getItem(VIDEO_KEY)) || [];
-    for(let i=1; i<=3; i++) {
-      const item = v[i-1] || {};
-      document.getElementById('v_url'+i).value = item.url || '';
-      document.getElementById('v_label'+i).value = item.label || '';
-      // Cannot set file input value, it's read-only
-    }
-  } catch(e) {}
-  updateStorageIndicator();
-}
-
-function updateStorageIndicator() {
-  const total = 5 * 1024 * 1024; // 5MB
-  let used = 0;
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    used += (localStorage.getItem(key).length + key.length) * 2; // approximation for UTF-16
-  }
-  const pct = Math.min(100, Math.round((used / total) * 100));
-  const fill = document.getElementById('storageFill');
-  const txt = document.getElementById('storageVal');
-  if (fill && txt) {
-    fill.style.width = pct + '%';
-    fill.className = 'storage-fill ' + (pct > 85 ? 'crit' : pct > 60 ? 'warn' : '');
-    txt.textContent = `${pct}% (${(used / (1024 * 1024)).toFixed(2)} / 5MB)`;
-  }
-}
-
-async function saveSettings(){
-  const s = getSettings();
-  s.storeName      = document.getElementById('s_storeName').value;
-  s.whatsappNumber = document.getElementById('s_wa').value;
-  s.email          = document.getElementById('s_email').value;
-  if (document.getElementById('s_address')) s.address = document.getElementById('s_address').value;
-  
-  const newPw = document.getElementById('s_password').value;
-  if(newPw) localStorage.setItem(PW_KEY, newPw);
-
-  localStorage.setItem(SETT_KEY, JSON.stringify(s));
-
-  // save videos
-  const v = [];
-  const currentV = JSON.parse(localStorage.getItem(VIDEO_KEY) || '[]');
-  
-  for(let i=1; i<=3; i++) {
-    const label = document.getElementById('v_label'+i).value;
-    const urlInp = document.getElementById('v_url'+i).value;
-    const fileInp = document.getElementById('v_file'+i).files[0];
-    
-    let finalUrl = urlInp;
-    if (fileInp) {
-      try {
-        finalUrl = await file2Base64(fileInp);
-        toast(`Video ${i} uploaded locally`);
-      } catch (e) {
-        toast(`Failed to read Video ${i}`, 'err');
-      }
-    } else if (!urlInp && currentV[i-1]?.url?.startsWith('data:video')) {
-      // Keep existing local video if no new file or url provided
-      finalUrl = currentV[i-1].url;
-    }
-
-    v.push({ url: finalUrl, label: label });
-  }
-  
-  try {
-    localStorage.setItem(VIDEO_KEY, JSON.stringify(v));
-    toast('Settings saved!');
-    updateStorageIndicator();
-  } catch (e) {
-    toast('STORAGE FULL! Video too large.', 'err');
-  }
-  
-  if (document.getElementById('s_password')) document.getElementById('s_password').value = '';
-}
 function deleteProduct(id){
   if(!confirm('Delete this product? This cannot be undone.')) return;
   saveProducts(getProducts().filter(p=>p.id!==id));
@@ -815,37 +732,82 @@ function deleteEnquiry(id){
 // ─── SETTINGS ────────────────────────────────────────────────────────────────
 function loadSettings(){
   const s = getSettings();
-  document.getElementById('s_storeName').value = s.storeName||'Shri Vrindavan Garments';
-  document.getElementById('s_wa').value         = s.whatsappNumber||'';
-  document.getElementById('s_email').value      = s.email||'';
-  document.getElementById('s_address').value    = s.address||'';
-  document.getElementById('s_password').value   = '';
+  document.getElementById('s_storeName').value = s.storeName || '';
+  document.getElementById('s_wa').value        = s.whatsappNumber || '';
+  document.getElementById('s_email').value     = s.email || '';
+  if (document.getElementById('s_address')) document.getElementById('s_address').value = s.address || '';
+
+  // load videos
+  try {
+    const v = JSON.parse(localStorage.getItem(VIDEO_KEY)) || [];
+    for(let i=1; i<=3; i++) {
+      const item = v[i-1] || {};
+      document.getElementById('v_url'+i).value = item.url || '';
+      document.getElementById('v_label'+i).value = item.label || '';
+    }
+  } catch(e) {}
+  updateStorageIndicator();
 }
 
-function saveSettings(){
+function updateStorageIndicator() {
+  const total = 5 * 1024 * 1024; // 5MB
+  let used = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    used += (localStorage.getItem(key).length + key.length) * 2;
+  }
+  const pct = Math.min(100, Math.round((used / total) * 100));
+  const fill = document.getElementById('storageFill');
+  const txt = document.getElementById('storageVal');
+  if (fill && txt) {
+    fill.style.width = pct + '%';
+    fill.className = 'storage-fill ' + (pct > 85 ? 'crit' : pct > 60 ? 'warn' : '');
+    txt.textContent = `${pct}% (${(used / (1024 * 1024)).toFixed(2)} / 5MB)`;
+  }
+}
+
+async function saveSettings(){
   const s = getSettings();
+  s.storeName      = document.getElementById('s_storeName').value;
+  s.whatsappNumber = document.getElementById('s_wa').value;
+  s.email          = document.getElementById('s_email').value;
+  if (document.getElementById('s_address')) s.address = document.getElementById('s_address').value;
+  
   const newPw = document.getElementById('s_password').value;
-  const updated = {
-    ...s,
-    storeName: document.getElementById('s_storeName').value,
-    whatsappNumber: document.getElementById('s_wa').value,
-    email: document.getElementById('s_email').value,
-    address: document.getElementById('s_address').value,
-  };
-  localStorage.setItem(SETT_KEY, JSON.stringify(updated));
   if(newPw) localStorage.setItem(PW_KEY, newPw);
-  window.dispatchEvent(new Event('settingsUpdated'));
-  toast('Settings saved!');
-}
 
-// ─── TOAST ────────────────────────────────────────────────────────────────────
-function toast(msg, type=''){
-  const w = document.getElementById('toastWrap');
-  const t = document.createElement('div');
-  t.className = 'toast'+(type?' '+type:'');
-  t.textContent = msg;
-  w.appendChild(t);
-  setTimeout(()=>t.remove(), 3000);
+  localStorage.setItem(SETT_KEY, JSON.stringify(s));
+
+  const v = [];
+  const currentV = JSON.parse(localStorage.getItem(VIDEO_KEY) || '[]');
+  
+  for(let i=1; i<=3; i++) {
+    const label = document.getElementById('v_label'+i).value;
+    const urlInp = document.getElementById('v_url'+i).value;
+    const fileInp = document.getElementById('v_file'+i).files[0];
+    
+    let finalUrl = urlInp;
+    if (fileInp) {
+      try {
+        finalUrl = await file2Base64(fileInp);
+      } catch (e) {
+        toast(`Failed to read Video ${i}`, 'err');
+      }
+    } else if (!urlInp && currentV[i-1]?.url?.startsWith('data:video')) {
+      finalUrl = currentV[i-1].url;
+    }
+    v.push({ url: finalUrl, label: label });
+  }
+  
+  try {
+    localStorage.setItem(VIDEO_KEY, JSON.stringify(v));
+    toast('Settings saved!');
+    updateStorageIndicator();
+  } catch (e) {
+    toast('STORAGE FULL!', 'err');
+  }
+  
+  if (document.getElementById('s_password')) document.getElementById('s_password').value = '';
 }
 </script>
 </body>
